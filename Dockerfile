@@ -128,6 +128,18 @@ RUN set -ex \
 		echo '[www]'; \
 		echo 'listen = [::]:9000'; \
 	} | tee php-fpm.d/zz-docker.conf
+# Install common php extensions
+RUN docker-php-ext-install mysqli
+RUN apk upgrade --update && apk add \
+  coreutils \
+  freetype-dev \
+  libjpeg-turbo-dev \
+  libltdl \
+  libmcrypt-dev \
+  libpng-dev \
+&& docker-php-ext-install -j$(nproc) iconv mcrypt \
+&& docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpe
+&& docker-php-ext-install -j$(nproc) gd
 
 # ---------------------------- END PHP ---------------------------------------
 #
